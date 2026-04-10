@@ -1,3 +1,5 @@
+-- vim: fdm=marker
+-- luacheck: globals vim
 local M = {}
 
 M.icons = {
@@ -29,7 +31,6 @@ end
 function M.render_plugin(p)
     local icon = M.icons.checking
     local status_hl = "PackUIStatusChecking"
-    
     if p.status == "Update Available" then
         icon = M.icons.update
         status_hl = "PackUIStatusUpdate"
@@ -42,7 +43,6 @@ function M.render_plugin(p)
     end
 
     local type_icon = p.type == "start" and M.icons.type_start or M.icons.type_opt
-    
     local lines = {}
     -- Header line with virtual text for status
     table.insert(lines, {
@@ -54,7 +54,25 @@ function M.render_plugin(p)
         }
     })
 
-    if #p.changelog > 0 then
+    -- Show update info if available
+    if p.status == "Update Available" and p.update_info then
+        local info_parts = {}
+        if p.update_info.timestamp then
+            local date = os.date("%Y-%m-%d", p.update_info.timestamp)
+            table.insert(info_parts, "Released: " .. date)
+        end
+        if p.update_info.version then
+            table.insert(info_parts, "Version: " .. p.update_info.version)
+        end
+        if #info_parts > 0 then
+            table.insert(lines, {
+                content = "    " .. table.concat(info_parts, "  "),
+                highlights = { {4, -1, "PackUIChangelog"} }
+            })
+        end
+    end
+
+    if p.changelog and #p.changelog > 0 then
         for _, log in ipairs(p.changelog) do
             table.insert(lines, {
                 content = "    " .. M.icons.arrow .. log,
@@ -62,7 +80,6 @@ function M.render_plugin(p)
             })
         end
     end
-    
     return lines
 end
 
