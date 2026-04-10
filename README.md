@@ -29,6 +29,8 @@ After installing, run `:PackUI` to open the plugin manager interface.
 
 Keybindings in the PackUI window:
 - `u` - Update plugin under cursor
+- `U` - Update all plugins
+- `C` - Check for new versions
 - `d` - Delete plugin under cursor
 - `q` or `<Esc>` - Close the window
 
