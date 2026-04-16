@@ -4,9 +4,10 @@ local M = {}
 
 M.icons = {
     update = "󰚰 ",
-    uptodate = " ",
+    uptodate = " ",
     checking = "󱑎 ",
-    error = " ",
+    installing = "󱑎 ",
+    error = " ",
     type_start = "󱐌 ",
     type_opt = "󱓞 ",
     arrow = "➜ ",
@@ -18,6 +19,7 @@ M.highlights = {
     PackUIStatusUpdate = { fg = "#fab387" },
     PackUIStatusOk = { fg = "#a6e3a1" },
     PackUIStatusChecking = { fg = "#94e2d5" },
+    PackUIStatusInstalling = { fg = "#f9e2af" },
     PackUIChangelog = { fg = "#7f849c", italic = true },
     PackUIType = { fg = "#f5c2e7" },
 }
@@ -37,6 +39,9 @@ function M.render_plugin(p)
     elseif p.status == "Up to date" then
         icon = M.icons.uptodate
         status_hl = "PackUIStatusOk"
+    elseif p.status == "Installing" then
+        icon = M.icons.installing
+        status_hl = "PackUIStatusInstalling"
     elseif p.status == "Error" or p.status == "Fetch Failed" then
         icon = M.icons.error
         status_hl = "DiagnosticError"
@@ -44,7 +49,6 @@ function M.render_plugin(p)
 
     local type_icon = p.type == "start" and M.icons.type_start or M.icons.type_opt
     local lines = {}
-    -- Header line with virtual text for status
     table.insert(lines, {
         content = string.format(" %s %-22s %s %s", icon, p.name, type_icon, p.repo),
         highlights = {
@@ -54,7 +58,6 @@ function M.render_plugin(p)
         }
     })
 
-    -- Show update info if available
     if p.status == "Update Available" and p.update_info then
         local info_parts = {}
         if p.update_info.timestamp then
